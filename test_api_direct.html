@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Upload API</title>
+</head>
+<body>
+    <h2>Direct API Test</h2>
+    <p>Open browser console (F12) to see results</p>
+    
+    <button onclick="testAPI()">Test Upload API</button>
+    
+    <div id="result"></div>
+    
+    <script>
+    async function testAPI() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '<h3>Testing...</h3>';
+        
+        try {
+            // Test 1: Check if file exists
+            console.log('Step 1: Checking if API file exists...');
+            
+            // Test 2: Try to access it
+            console.log('Step 2: Fetching API...');
+            const response = await fetch('/tuzlateknik/api/upload_book.php', {
+                method: 'POST',
+                body: new FormData()
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            const text = await response.text();
+            console.log('Raw response text:', text);
+            console.log('Content-Type header:', response.headers.get('content-type'));
+            
+            resultDiv.innerHTML = `
+                <h3>Results:</h3>
+                <p><strong>Status:</strong> ${response.status}</p>
+                <p><strong>Content-Type:</strong> ${response.headers.get('content-type')}</p>
+                <p><strong>Raw Response (first 500 chars):</strong></p>
+                <pre style="background:#f0f0f0;padding:10px;max-height:300px;overflow:auto;">${text.substring(0, 500)}</pre>
+                
+                ${text.trim().startsWith('<') ? '<p style="color:red;font-weight:bold;">⚠ RESPONSE IS HTML! This means PHP errors are being displayed.</p>' : ''}
+            `;
+            
+        } catch (error) {
+            console.error('Error:', error);
+            resultDiv.innerHTML = `<p style="color:red"><strong>Error:</strong> ${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
